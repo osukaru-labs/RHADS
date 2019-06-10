@@ -1,0 +1,33 @@
+2.2.2.	Configuración de Servicio Samba
+Antes de realizar la configuración revisar si los servicios de Samba, nmb y winbind están funcionando con el comando
+
+systemctl status smb.service && systemctl status nmb.service && systemctl status winbind
+ 
+Si los servicios no están funcionando, se suben con el comando
+ 
+systemctl start smb.service && systemctl start nmb.service && systemctl start winbind 
+
+•	Configuración de servicio samba
+
+Para la configuración del servicio primero se busca y se ve los permisos que tiene el directorio a compartir en este caso la ruta esta en se ingresa a la ruta /etc/samba/smb.conf, al cual se le hace un bkup de la configuracion anterior por si algún fallo con el comando:
+ 
+cp /etc/samba/smb.conf /etc/samba/smb.conf.bkup 
+ 
+Ya teniendo el bkup se realiza la configuración para la carpeta compartida de las clases de bantotal ubicada en la siguiente ruta Se verifica los permisos que tiene el directorio para compartirlo con el usuario que lo requiera.
+
+ls -l /ruta_del_directorioi_a_compartir
+
+Se ingresa al archivo de samba para editarlo y crear el directorio compartido para Windows.
+
+nano /etc/samba/smb.conf
+
+Se crea directorio con el nombre con el cual se identifica como carpeta compartida en Windows, en este ejemplo se le llamara [clases].
+La opción comment es para la descripción de la carpeta compartida.
+La opción path es para referenciar la ruta del directorio compartido.
+La opción browseable se refiere para poder navegar sobre los directorios internos del directorio compartido.
+La opción writeable es para decir que se tiene el permiso de modificar lo que este dentro de ese directorio.
+La opción valid users permite que solo el usuario del dominio que se ingrese en este campo pueda ver la carpeta compartida.
+ 
+Por cada ves que se modifique el archivo smb.conf se debe realizar el reinicio del servicio.
+ 
+systemctl restart smb.service 
