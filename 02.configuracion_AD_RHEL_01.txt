@@ -77,7 +77,7 @@ Se realiza la sincronización correcta de la hora desde el controlador de domini
  
 •	Se realiza la sincronización con el controlador de dominio
 
-	ntpdate BMM.com
+	ntpdate dominio.com
 
 •	Se inicializa el servicio ntp
 
