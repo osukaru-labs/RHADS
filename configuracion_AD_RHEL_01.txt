@@ -1,0 +1,135 @@
+2.	INSTRUCTIVO
+
+2.1.	Sistema Operativo
+
+El sistema operativo utilizado es la distribución de Red Hat Enterprise Linux Server release 7.6 (Maipo), la cual se puede descargar en la página https://access.redhat.com/downloads/ para la descarga de esta distribución se debe estar inscrito en la página de red hat o haber comprado el licenciamiento.
+
+2.2.	Configuración Inicial
+
+2.2.1.	Deshabilitar y detener el servicio de firewall
+
+Para deshabilitar y detener el servicio de realiza con los comandos
+	Para deshabilitar:
+
+	systemctl disable firewalld
+
+	Para detener:
+
+	systemctl stop firewalld
+
+2.2.2.	Instalación de Paquetes necesarios.
+
+Para instalar paquetes en Red Hat de utiliza el comando yum install los paquetes a instalar son los siguientes:
+
+•	Realmd: ejecuta una búsqueda para la detección de los administradores de domino y directorios activos disponibles para asi unirse a ellos, también para configurar los servicios para que los usuarios puedan ingresar con su usuario y password de dominio.
+		yum -y install realmd
+
+•	Samba: Permite la interconexión de redes Microsoft Windows®, Linux, UNIX y otros sistemas operativos juntos, permitiendo el acceso a archivos basados en Windows y compartir impresoras, para realizar …. Al directorio activo es necesario intalar también los siguientes paquetes de samba:
+	o	samba-winbind 
+	o	samba-winbind-clients 
+	o	samba-winbind-krb5-locator 
+ 
+	yum -y install samba samba-winbind samba-winbind-clients samba-winbind-krb5-locator
+ 
+•	ntp:  El servicio permite sincronizar la hora del servidor administrador de dominio con el servidor en Linux, es necesario instalar un paquere extra:
+	o	ntpdate 
+	
+	yum -y install ntp ntpdate
+ 
+•	sssd: permite ralizar acceso remoto a mecanismos de autenticación segura a dominios y directorios activos, obteniendo la información y datos para realizar la conexión segura.
+	
+	yum -y install sssd
+	
+•	Oddjob: oddjob es un servicio D-BUS que realiza tareas particulares para los clientes que se conectan a él y emiten solicitudes utilizando el bus de mensajes de todo el sistema, es necesario instalar un paquere extra:
+	o	oddjob-mkhomedir
+	
+	yum -y install oddjob oddjob-mkhomedir 
+ 
+•	authconfig-tui: 
+
+	yum -y install authconfig-tui
+ 
+•	krb5-workstation:
+
+	yum -y install krb5-workstation
+ 
+•	openldap:
+
+	yum -y install openldap openldap-clients
+ 
+•	adcli: 
+
+	yum install -y adcli
+ 	
+2.3.	Configuración de Servicios
+
+2.3.1.	Sincronización de servidores
+
+Se realiza la sincronización correcta de la hora desde el controlador de dominio, el comando a utilizar es el siguiente:
+
+•	Se habilita el servicio ntp
+
+	systemctl enable ntpd
+ 
+•	Se detiene el servicio ntp
+
+	systemctl stop ntpd
+ 
+•	Se realiza la sincronización con el controlador de dominio
+
+	ntpdate BMM.com
+
+•	Se inicializa el servicio ntp
+
+	systemctl start ntpd
+ 
+•	Se habilita y se inicia el servicio winbind
+
+	systemctl enable winbind && systemctl start winbind
+ 
+
+2.3.2.	Unirse al Directorio Activo
+
+Para el ingreso del servidor al directorio activo se usa el comando que abre una interfaz de guía para la configuración de los archivos necesarios para la autenticación. Con el comando se accede a esta interfaz.
+ 
+	authconfig-tui
+ 
+En la interfaz nos saldrá las opciones para los diferentes tipos de autenticación, se escogen los que tienen el *. Use Winbind, Use MD5 Password, Use Shadow Password y Locla authorization is sufficient
+
+Se Selecciona los parámetros de: 
+	security model (ADS)
+Se ingresan los campos de: 
+	domain: DOMINIO
+	domain controller: nombre del controlador de windows.DOMINIO.COM
+	ads realm: DOMINIO.COM 
+se escoge la opción /bin/bash
+ 
+Para comprobar que el servidor ingreso al directorio activo se ejecuta el siguiente comando
+ 
+	net ads testjoin
+	
+Se lista la conexión con el servidor de directorio activo con el comando:
+ 
+	realm list
+ 
+Los archivos krb5.conf y smb.conf, son los archivos modificado por lo hecho en la interfaz de vinculación con el directorio Activo.
+Los archivos están en las siguientes rutas:
+ 
+ /etc/krb5.conf
+
+ /etc/samba/smb.conf
+ 
+2.3.3.	Reinicio de Servicios 
+
+Se reinicia los servicios de samba, nmb y winbind para tomar los cambios anteriormente hechos:
+
+	systemctl restart smb.service && systemctl restart nmb.service && systemctl restart winbind
+  
+Se reinicia el servidor:
+	
+	systemctl reboot
+  
+Luego de reiniciar el servidor se revisan si los servicios samba, nmb y winbind se están ejecutando:
+
+	systemctl status smb.service && systemctl status nmb.service && systemctl status winbind
+  
