@@ -1,0 +1,25 @@
+Paso 1.- Instalar GUI en CentOS
+1.1.- Ejecutar el siguiente comando para listar los grupos de paquetes disponibles en CentOS / RHEL 7:
+
+yum grouplist
+  
+1.2.- Para instalar Gnome en un servidor RHEL 7 o CentOS Linux 7 para operar servicios de infraestructura de red con una GUI, escriba el siguiente comando:
+
+yum groupinstall "Server with GUI"
+Paso 2.- Iniciar y configurar GUI de Centos
+2.1.-  Para configurar CentOS7 / RHEL 7 para arrancar directamente en la GUI, Escriba el siguiente comando:
+sys
+unlink /etc/systemd/system/default.target
+1
+unlink /etc/systemd/system/default.target
+2.2.- Crear un enlace simbólico para iniciar siempre con el GUI instalada.
+
+ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+1
+ln -sf /lib/systemd/system/graphical.target /etc/systemd/system/default.target
+2.3.- Reiniciar CentOS7 / RHEL 7 para guardar los cambios.
+
+PowerShell
+Reboot
+1
+Reboot
